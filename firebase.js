@@ -18,10 +18,11 @@ const firebaseApp =firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const store = db.collection('components').doc('state');
 store.set({
-    door: false,
-    lights : false,
-    daytime : true,
-    fan : false ,
+    door: true,
+    lights : true,
+    daytime : false,
+    Auto : false,
+    food : '' ,
     temperature : 0 ,
     TimeEggDetc :'',
     TimeEggNotDetc : '',

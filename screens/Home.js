@@ -20,24 +20,19 @@ const store = db.collection('components').doc('state');
   const [isDoorEnabled, setDoorEnabled] = useState(false);
   const [isLightEnabled, setLightEnabled] = useState(false);
   const [isCoolEnabled, setCoolEnabled] = useState(false);
+  const [isAuto, setAuto] = useState(false);
   const [temp , setTemp] = useState(1);
   const [eggDetc,setEggDetc]= useState('');
   const [eggNotDetc,setEggNotDetc]= useState('');
+  const [food,setFood]= useState('');
   db.collection("components").doc('state')
   .get()
   .then((querySnapshot) => {
     setTemp(querySnapshot.data()['temperature']);
     setEggDetc(querySnapshot.data()['TimeEggDetc'].toString());
     setEggNotDetc(querySnapshot.data()['TimeEggNotDetc'].toString());
-    /*if(querySnapshot.data()['door'] != isDoorEnabled){
-      setDoorEnabled(querySnapshot.data()['door']);
-    }
-    if(querySnapshot.data()['fan'] != isCoolEnabled){
-      setCoolEnabled(querySnapshot.data()['fan']);
-    }
-    if(querySnapshot.data()['lights'] != isLightEnabled){
-      setLightEnabled(querySnapshot.data()['lights']);
-    }*/
+    setFood(querySnapshot.data()['food'].toString());
+ 
     
     
     
@@ -54,7 +49,7 @@ const store = db.collection('components').doc('state');
     if(isDoorEnabled) s = "False";
     else s= "True";
     store.update({
-      door: s,
+      door: isDoorEnabled,
     })
     .then(() => {
       console.log('door state added!');
@@ -67,8 +62,8 @@ const store = db.collection('components').doc('state');
     if(isLightEnabled){l = "False"; d ="True";} 
     else{l = "True"; d ="False";}
     store.update({
-      lights: l,
-      daytime: d,
+      lights: isLightEnabled,
+      daytime: !isLightEnabled,
     })
     .then(() => {
       console.log('lights added!');
@@ -82,12 +77,25 @@ const store = db.collection('components').doc('state');
     if(isCoolEnabled) c = "False";
     else c= "True";
     store.update({
-      fan: c,
+      fan: isCoolEnabled,
     })
     .then(() => {
       console.log('fan added!');
     });
   }
+  const AutoSwitch = () => {
+    setAuto((previousState) => !previousState);
+    var c;
+    if (isAuto) c = false;
+    else c = true;
+    store
+      .update({
+        Auto: c,
+      })
+      .then(() => {
+        console.log("Auto added!");
+      });
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.top}></View>
@@ -122,8 +130,13 @@ const store = db.collection('components').doc('state');
           <Text style={styles.temp}>درجة الحرارة</Text>
           <Text style={styles.temp}>{temp}</Text>
         </View>
+        <View style={styles.weidget}>
+          <Text style={styles.temp}>حالة العلف</Text>
+          <Text style={styles.temp}> {food }</Text>
+        </View>
       </View>
 
+    
       <View style={styles.rowWidget}>
         <View style={styles.weidget}>
           <Text style={styles.temp}>اكشاف البيضة</Text>
@@ -133,7 +146,6 @@ const store = db.collection('components').doc('state');
           <Text style={styles.temp}>عدم اكتشاف البيضة</Text>
           <Text style={styles.temp}>{eggNotDetc}</Text>
         </View>
-       
       </View>
 
       <View style={styles.menu2}>
@@ -141,12 +153,12 @@ const store = db.collection('components').doc('state');
           <View style={styles.name}>
             <Switch
               ios_backgroundColor="#3e3e3e"
-              onValueChange={CoolSwitch}
-              value={isCoolEnabled}
+              onValueChange={AutoSwitch}
+              value={isAuto}
             />
           </View>
           <View style={styles.name}>
-            <Text style={styles.txt}>نظام التهوية</Text>
+            <Text style={styles.txt}>أوتوماتيك</Text>
           </View>
         </View>
       </View>
